@@ -1,3 +1,7 @@
+# tmp
+*.swp
+*.tmp
+*.zip
 # Compiled Object files
 *.slo
 *.lo
