@@ -35,7 +35,9 @@ def main():
     v = {}
     x = {}
     b = {}
-    d = t = deff = {}
+    d = {}
+    t = {}
+    deff = {}
     a = 1
 
     for i in range(lens+2):

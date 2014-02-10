@@ -1,4 +1,7 @@
 # tmp
+*.data
+*.dat
+*.txt
 *.swp
 *.tmp
 *.zip

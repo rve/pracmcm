@@ -1,0 +1,8 @@
+* Inversion
+* Speed-based rule 3 times better than single lane
+compared to NaSch's 2 times uppper bound
+* Better performance on traffic jam
+* Robust regarding slow vehicles
+* Reproduce empirical lane changing curves
+* Accord with the dynamical behavior of the single-lane system
+* lane chaning 的极值在1000左右，flow极值在250左右

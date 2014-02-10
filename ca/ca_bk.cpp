@@ -66,13 +66,11 @@ bool outborder(const C& tmp) {
     int ans = tmp.x[tmp.curt-1];
     return (ans > lenmax);
 }
-double randp(int vn, int bn1, int th) {
-    double p = 0;
+int randp(double vn, int bn1, double th) {
+    int p = 0;
     if (bn1 == 1 && th < ts) {
         p = pb;
     }
-    else if (vn == 0) p = p0;
-    else p = pd;
 }
 int main() {
 #ifdef LOCAL 
@@ -82,7 +80,6 @@ int main() {
     list<C> lis;
     srand(time(NULL));
     for (int T=0; T<TIMES; T++) {
-        // add new car 
         C tmp;
         tmp.curt = 0;
         tmp.id = T;

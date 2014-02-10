@@ -42,15 +42,15 @@ typedef long long int64;
 const int INF = 0x3f3f3f3f;
 const int M = 110000;
 const int MOD = int(1e9) + 7;
-const double EPS = 1E-5;
+const double EPS = 1E-9;
 const int TIMES = 10;
 const int lens = 10; 
 double pb = 0.94, p0 = 0.5, pd = 0.1, ts =7, vmax = 20, gap_safe = 7, lenmax = 20;
 int road_len = 100;
 class C {
-    public: int v[TIMES], x[TIMES], b[TIMES];
-        int curx; int curt, id;
-        int d, deff, t;
+    public: double v[TIMES], x[TIMES], b[TIMES];
+        double curx; int curt, id;
+        double d, deff, t;
         C() {
             memset(v, 0, sizeof(v));
             memset(x, 0, sizeof(x));
@@ -63,16 +63,8 @@ class C {
 };
 
 bool outborder(const C& tmp) {
-    int ans = tmp.x[tmp.curt-1];
+    double ans = tmp.x[tmp.curt-1];
     return (ans > lenmax);
-}
-double randp(int vn, int bn1, int th) {
-    double p = 0;
-    if (bn1 == 1 && th < ts) {
-        p = pb;
-    }
-    else if (vn == 0) p = p0;
-    else p = pd;
 }
 int main() {
 #ifdef LOCAL 
@@ -82,12 +74,11 @@ int main() {
     list<C> lis;
     srand(time(NULL));
     for (int T=0; T<TIMES; T++) {
-        // add new car 
         C tmp;
         tmp.curt = 0;
         tmp.id = T;
         double r = ((double) rand() / (RAND_MAX));
-        int tmpv = r * vmax;
+        double tmpv = r * vmax;
         tmp.v[tmp.curt] = tmpv;
         cout<<tmpv<<endl;
         lis.push_back(tmp);
@@ -109,7 +100,7 @@ int main() {
         // print tmp
         for (std::list<C>::iterator it = lis.begin(); it != lis.end(); it++){
             int cur = (*it).curt-1;
-            printf("(%d, %d, %d, %d) ", (*it).id, (*it).v[cur], (*it).curt, (*it).x[(*it).curt-1]);
+            printf("(%d, %d, %f, %f) ", (*it).id, (*it).v[cur], (*it).curt, (*it).x[(*it).curt-1]);
         }
         printf("\n");
     }
