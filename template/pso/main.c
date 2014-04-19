@@ -14,6 +14,5 @@ int main(int argc, const char *argv[])
 		UpdateofVandX();        //速度和位置更新，即飞翔
 	}
 
-	getchar();
 	return 0;
 }
