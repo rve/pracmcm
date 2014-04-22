@@ -9,8 +9,8 @@ void RandInitofSwarm(void)
 {
 	int i, j;
         //学习因子C1,C2
-	swarm.C1 = 2.0;
-	swarm.C2 = 2.0;
+	swarm.C1 = MC1;
+	swarm.C2 = MC2;
 	for(j = 0; j < Dim; j++)
 	{
 		swarm.Xdown[j] = -5.12;    //搜索空间范围
@@ -18,7 +18,7 @@ void RandInitofSwarm(void)
 		swarm.Vmax[j] = 0.0512;       //粒子飞翔速度最大值
 	}
 
-	srand((unsigned)time(NULL));
+	//srand((unsigned)time(NULL));
 	for(i = 0; i < PNum; i++)
 	{
 		for(j = 0; j < Dim; j++)
@@ -62,9 +62,13 @@ static double ComputAFitness(double X[])
 	*/
 #if SCHAFFER
 	//函数:Schaffer's F6
+  double ans = 0;
+  for (int i=0; i<Dim; i++) {
+    ans += -X[i] * sin(sqrt(fabs(X[i])));
+  }
+  return ans;
 
-	return -1*(0.5-(sin(sqrt(X[0]*X[0]+X[1]*X[1]))*\
-		sin(sqrt(X[0]*X[0]+X[1]*X[1]))-0.5)/pow(( 1+0.001*(X[0]*X[0]+X[1]*X[1])),2));
+
 
 #endif
 
@@ -135,7 +139,7 @@ void UpdateofVandX(void)
 }
 
 /*更新个体极值P和全局极值GBest*/
-void UpdatePandGbest(void)
+double UpdatePandGbest(void)
 {
 	int i, j;
 	//update of P if the X is bigger than current P
@@ -157,7 +161,8 @@ void UpdatePandGbest(void)
 	{
 		swarm.GBest[j] = swarm.Particle[swarm.GBestIndex].P[j];
 	}
-	printf("The %dth iteraction.\n",cur_n);
+  /*
+  printf("The %dth iteraction.\n",cur_n);
 	printf("GBestIndex:%d \n",swarm.GBestIndex );
 	printf("GBest:" );
 	for(j=0;j<Dim;j++)
@@ -166,4 +171,8 @@ void UpdatePandGbest(void)
 	}
 	printf("\n" );
 	printf("Fitness of GBest: %f \n\n",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
+  if (cur_n == ITE_N/2)
+    printf("%f ",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
+  */
+	return ComputAFitness(swarm.Particle[swarm.GBestIndex].P);
 }

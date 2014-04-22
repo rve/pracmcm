@@ -24,6 +24,7 @@ void RandInitofSwarm(void)
 		for(j = 0; j < Dim; j++)
 		{
 			swarm.Particle[i].X[j] = rand() / (double)RAND_MAX * (swarm.Xup[j] - swarm.Xdown[j]) + swarm.Xdown[j];	//-Xdown~Xup
+      //printf ("%f ", swarm.Particle[i].X[j]);
 			swarm.Particle[i].V[j] = rand() / (double)RAND_MAX * swarm.Vmax[j] * 2 - swarm.Vmax[j];					//-Vmax~Vmax
 		}
 	}
@@ -170,9 +171,8 @@ double UpdatePandGbest(void)
 	}
 	printf("\n" );
 	printf("Fitness of GBest: %f \n\n",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
-  //#if (cur_n == 1 || cur_n == 0) {
-    printf("%lf ",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
-    puts("");
   */
+  if (cur_n == ITE_N/2)
+    printf("%f ",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
 	return ComputAFitness(swarm.Particle[swarm.GBestIndex].P);
 }
