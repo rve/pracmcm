@@ -15,8 +15,10 @@ int main(int argc, const char *argv[])
     RandInitofSwarm();             //初始化粒子群
     while(cur_n++ != ITE_N)
     {
-      ret[cur_n] += UpdatePandGbest();    //更新个体历史最优解P和全局最优解GBest
       UpdateofVandX();        //速度和位置更新，即飞翔
+      ret[cur_n] += UpdatePandGbest();    //更新个体历史最优解P和全局最优解GBest
+      UpdateParams();
+      debug();
     }
     //usleep(900000);
   }

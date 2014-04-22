@@ -9,16 +9,17 @@ void RandInitofSwarm(void)
 {
 	int i, j;
         //学习因子C1,C2
-	swarm.C1 = MC1;
-	swarm.C2 = MC2;
+	swarm.C1 = 2.0;
+	swarm.C2 = 2.0;
+  swarm.W = 0.9;
+  swarm.State = 1;
 	for(j = 0; j < Dim; j++)
 	{
 		swarm.Xdown[j] = -500;    //搜索空间范围
 		swarm.Xup[j] = 500;
-		swarm.Vmax[j] = 10;       //粒子飞翔速度最大值
+		swarm.Vmax[j] = 200;       //粒子飞翔速度最大值
 	}
 
-	//srand((unsigned)time(NULL));
 	for(i = 0; i < PNum; i++)
 	{
 		for(j = 0; j < Dim; j++)
@@ -56,7 +57,7 @@ static double ComputAFitness(double X[])
 #endif
 
 	/*
-		
+
 		min-f(0,0)=-1.x,y-(-4,4)
 	*/
 #if SCHAFFER
@@ -115,7 +116,7 @@ void UpdateofVandX(void)
 	for(i = 0; i < PNum; i++)
 	{
 		for(j = 0; j < Dim; j++)
-			swarm.Particle[i].V[j] = W_FUN * swarm.Particle[i].V[j] +
+			swarm.Particle[i].V[j] = swarm.W * swarm.Particle[i].V[j] +
 			rand() / (double)RAND_MAX * swarm.C1 * (swarm.Particle[i].P[j] - swarm.Particle[i].X[j]) +
 			rand() / (double)RAND_MAX * swarm.C2 * (swarm.GBest[j] - swarm.Particle[i].X[j]);
 		for(j = 0; j < Dim; j++)
@@ -140,7 +141,7 @@ void UpdateofVandX(void)
 /*更新个体极值P和全局极值GBest*/
 double UpdatePandGbest(void)
 {
-	int i, j;
+	int i, j, k;
 	//update of P if the X is bigger than current P
 	for (i = 0; i < PNum; i++)
 	{
@@ -160,8 +161,89 @@ double UpdatePandGbest(void)
 	{
 		swarm.GBest[j] = swarm.Particle[swarm.GBestIndex].P[j];
 	}
+	return ComputAFitness(swarm.Particle[swarm.GBestIndex].P);
+}
+
+  //adjust parameter
+void UpdateParams(void) {
+  int i, j, k;
+  double max_dist = -1, min_dist = -1, g_dist;
+  for (i = 0; i < PNum; i++) {
+    double sum_dist = 0;
+    for (j = 0; j < PNum; j++) {
+      if (i == j)
+        continue;
+      for (k = 0; k < Dim; k++)
+        sum_dist += fabs(swarm.Particle[i].X[k] - swarm.Particle[j].X[k]);
+    }
+    if (sum_dist > max_dist || max_dist == -1)
+      max_dist = sum_dist;
+    if (sum_dist < min_dist || min_dist == -1)
+      min_dist = sum_dist;
+    if (i == swarm.GBestIndex)
+      g_dist = sum_dist;
+  }
+  double ff = (g_dist - min_dist) / (max_dist - min_dist);
+  if (ff < 0.2) {
+    swarm.State = 3;
+  }
+  else if (ff >= 0.2 && ff <= 0.3) {
+    if (swarm.State == 3 || swarm.State == 4)
+      swarm.State = 3;
+    else
+      swarm.State = 2;
+  }
+  else if (ff > 0.3 && ff < 0.4) {
+    swarm.State = 2;
+  }
+  else if (ff >= 0.4 && ff <= 0.6) {
+    if (swarm.State == 2 || swarm.State == 3)
+      swarm.State = 2;
+    else
+      swarm.State = 1;
+  }
+  else if (ff > 0.6 && ff < 0.7) {
+    swarm.State = 1;
+  }
+  else if (ff >= 0.7 && ff <= 0.8) {
+    if (swarm.State == 4 || swarm.State == 3)
+      swarm.State = 4;
+    else
+      swarm.State = 1;
+  }
+  else {
+    swarm.State = 1;
+  }
+  int theta = rand() % 5 + 5;
+  if (swarm.State == 1) {
+    swarm.C1 += (double)(rand() % theta) / 100.0;
+    swarm.C2 -= (double)(rand() % theta) / 100.0;
+  } else if (swarm.State == 2) {
+    swarm.C1 += (double)(rand() % theta) / 200.0;
+    swarm.C2 -= (double)(rand() % theta) / 200.0;
+  } else if (swarm.State == 3) {
+    swarm.C1 += (double)(rand() % theta) / 200.0;
+    swarm.C2 += (double)(rand() % theta) / 200.0;
+  } else {
+    swarm.C1 -= (double)(rand() % theta) / 100.0;
+    swarm.C2 += (double)(rand() % theta) / 100.0;
+  }
+  if (swarm.C1 + swarm.C2 > 4.0) {
+    double nc1, nc2;
+    nc1 = swarm.C1 / (swarm.C1 + swarm.C2) * 4.0;
+    nc2 = swarm.C2 / (swarm.C1 + swarm.C2) * 4.0;
+    swarm.C1 = nc1;
+    swarm.C2 = nc2;
+  }
+  swarm.W = 1.0 / (1.0 + 1.5 * exp(-2.6 * ff));
+}
+
+void debug(void) {
+  printf("The %dth iteration.\n",cur_n);
+  printf("c1: %lf; c2: %lf; w:%lf; state:%d\n",
+      swarm.C1, swarm.C2, swarm.W, swarm.State);
+	printf("Fitness of GBest: %lf \n\n",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
   /*
-  printf("The %dth iteraction.\n",cur_n);
 	printf("GBestIndex:%d \n",swarm.GBestIndex );
 	printf("GBest:" );
 	for(j=0;j<Dim;j++)
@@ -174,5 +256,4 @@ double UpdatePandGbest(void)
     printf("%lf ",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
     puts("");
   */
-	return ComputAFitness(swarm.Particle[swarm.GBestIndex].P);
 }

@@ -40,6 +40,8 @@ struct SWARM
 	double GBest[Dim];
 	double C1;
 	double C2;
+  double W;
+  int State;
 	double Xup[Dim];
 	double Xdown[Dim];
 	double Vmax[Dim];
@@ -50,6 +52,8 @@ extern struct SWARM swarm;
 void RandInitofSwarm(void);
 void UpdateofVandX(void);
 double UpdatePandGbest(void);
+void UpdateParams(void);
+void debug(void);
 
 #endif
 
