@@ -208,8 +208,10 @@ double get_ff(void) {
     for (j = 0; j < PNum; j++) {
       if (i == j)
         continue;
+      double tmp = 0;
       for (k = 0; k < Dim; k++)
-        sum_dist += fabs(swarm.Particle[i].X[k] - swarm.Particle[j].X[k]);
+        tmp += pow(swarm.Particle[i].X[k] - swarm.Particle[j].X[k], 2);
+      sum_dist += sqrt(tmp);
     }
     if (sum_dist > max_dist || max_dist == -1)
       max_dist = sum_dist;
@@ -218,6 +220,8 @@ double get_ff(void) {
     if (i == swarm.GBestIndex)
       g_dist = sum_dist;
   }
+  if (g_dist - min_dist == 0 && max_dist - min_dist == 0)
+    return 0;
   return (g_dist - min_dist) / (max_dist - min_dist);
 
 }
