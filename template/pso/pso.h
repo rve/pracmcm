@@ -15,7 +15,7 @@
 
 #define Dim 30 //粒子维度
 #define PNum 20		//种群规模
-#define ITE_N  10000 //最大迭代次数
+#define ITE_N  100 //最大迭代次数
 extern int cur_n;			//当前迭代次数
 
 /*惯性权重函数*/
