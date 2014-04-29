@@ -12,12 +12,11 @@ void RandInitofSwarm(void)
 	swarm.C1 = 2.0;
 	swarm.C2 = 2.0;
   swarm.W = 0.9;
-  swarm.State = 1;
 	for(j = 0; j < Dim; j++)
 	{
-		swarm.Xdown[j] = -500;    //搜索空间范围
-		swarm.Xup[j] = 500;
-		swarm.Vmax[j] = 200;       //粒子飞翔速度最大值
+		swarm.Xdown[j] = -5.12;    //搜索空间范围
+		swarm.Xup[j] = 5.12;
+		swarm.Vmax[j] = 0.5;       //粒子飞翔速度最大值
 	}
 
 	for(i = 0; i < PNum; i++)
@@ -28,6 +27,7 @@ void RandInitofSwarm(void)
 			swarm.Particle[i].V[j] = rand() / (double)RAND_MAX * swarm.Vmax[j] * 2 - swarm.Vmax[j];					//-Vmax~Vmax
 		}
 	}
+  swarm.State = 1;
 }
 /*计算适应度函数的适应度，待进一步完善*/
 static double ComputAFitness(double X[])
@@ -165,25 +165,9 @@ double UpdatePandGbest(void)
 }
 
   //adjust parameter
-void UpdateParams(void) {
-  int i, j, k;
-  double max_dist = -1, min_dist = -1, g_dist;
-  for (i = 0; i < PNum; i++) {
-    double sum_dist = 0;
-    for (j = 0; j < PNum; j++) {
-      if (i == j)
-        continue;
-      for (k = 0; k < Dim; k++)
-        sum_dist += fabs(swarm.Particle[i].X[k] - swarm.Particle[j].X[k]);
-    }
-    if (sum_dist > max_dist || max_dist == -1)
-      max_dist = sum_dist;
-    if (sum_dist < min_dist || min_dist == -1)
-      min_dist = sum_dist;
-    if (i == swarm.GBestIndex)
-      g_dist = sum_dist;
-  }
-  double ff = (g_dist - min_dist) / (max_dist - min_dist);
+
+
+void setState(double ff) {
   if (ff < 0.2) {
     swarm.State = 3;
   }
@@ -214,6 +198,33 @@ void UpdateParams(void) {
   else {
     swarm.State = 1;
   }
+}
+
+double get_ff(void) {
+  int i, j, k;
+  double max_dist = -1, min_dist = -1, g_dist;
+  for (i = 0; i < PNum; i++) {
+    double sum_dist = 0;
+    for (j = 0; j < PNum; j++) {
+      if (i == j)
+        continue;
+      for (k = 0; k < Dim; k++)
+        sum_dist += fabs(swarm.Particle[i].X[k] - swarm.Particle[j].X[k]);
+    }
+    if (sum_dist > max_dist || max_dist == -1)
+      max_dist = sum_dist;
+    if (sum_dist < min_dist || min_dist == -1)
+      min_dist = sum_dist;
+    if (i == swarm.GBestIndex)
+      g_dist = sum_dist;
+  }
+  return (g_dist - min_dist) / (max_dist - min_dist);
+
+}
+void UpdateParams(void) {
+  int i, j, k;
+  double ff = get_ff();
+  setState(ff);
   int theta = rand() % 5 + 5;
   if (swarm.State == 1) {
     swarm.C1 += (double)(rand() % theta) / 100.0;
@@ -228,6 +239,20 @@ void UpdateParams(void) {
     swarm.C1 -= (double)(rand() % theta) / 100.0;
     swarm.C2 += (double)(rand() % theta) / 100.0;
   }
+  if (swarm.C1 < 1.5) {
+    swarm.C1 = 1.5;
+  }
+  if (swarm.C1 > 2.5) {
+    swarm.C1 = 2.5;
+  }
+  if (swarm.C2 < 1.5) {
+    swarm.C2 = 1.5;
+  }
+  if (swarm.C2 > 2.5) {
+    swarm.C2 = 2.5;
+  }
+
+
   if (swarm.C1 + swarm.C2 > 4.0) {
     double nc1, nc2;
     nc1 = swarm.C1 / (swarm.C1 + swarm.C2) * 4.0;
@@ -236,13 +261,13 @@ void UpdateParams(void) {
     swarm.C2 = nc2;
   }
   swarm.W = 1.0 / (1.0 + 1.5 * exp(-2.6 * ff));
+  printf("The %dth iteration.\n",cur_n);
+  printf("c1: %lf; c2: %lf; f: %lf; w: %lf; state: %d\n",
+      swarm.C1, swarm.C2, ff, swarm.W, swarm.State);
+	printf("Fitness of GBest: %lf \n\n",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
 }
 
 void debug(void) {
-  printf("The %dth iteration.\n",cur_n);
-  printf("c1: %lf; c2: %lf; w:%lf; state:%d\n",
-      swarm.C1, swarm.C2, swarm.W, swarm.State);
-	printf("Fitness of GBest: %lf \n\n",ComputAFitness(swarm.Particle[swarm.GBestIndex].P));
   /*
 	printf("GBestIndex:%d \n",swarm.GBestIndex );
 	printf("GBest:" );

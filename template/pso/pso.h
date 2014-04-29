@@ -8,14 +8,14 @@
 
 /*各种适应度函数选择，要用哪个，就设置为1,但只能有一个为1*/
 #define TEST 0
-#define GOLDSTEIN_PRICE	0
-#define SCHAFFER 1
+#define GOLDSTEIN_PRICE	1
+#define SCHAFFER 0
 #define HANSEN	0
 #define NEEDLE	0
 
 #define Dim 30 //粒子维度
 #define PNum 20		//种群规模
-#define ITE_N  100 //最大迭代次数
+#define ITE_N  10000 //最大迭代次数
 extern int cur_n;			//当前迭代次数
 
 /*惯性权重函数*/
@@ -52,6 +52,8 @@ extern struct SWARM swarm;
 void RandInitofSwarm(void);
 void UpdateofVandX(void);
 double UpdatePandGbest(void);
+double get_ff(void);
+void setState(double ff);
 void UpdateParams(void);
 void debug(void);
 
